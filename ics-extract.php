@@ -1,14 +1,14 @@
 <?php 
-$base = mysql_connect ('DATABASE', 'USER', 'PASSWORDS');
-	mysql_select_db ('db590264841', $base);
-  $sql = "SELECT * FROM table WHERE username = '".$_SESSION['login']."'";
-	$req = mysql_query($sql41) or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
-	while ($data = mysql_fetch_array($req41)) 
-	{
+$base = mysql_connect ('DATABASE-SITE', 'USER', 'PASSWORD');
+mysql_select_db ('DATABASE', $base);
+$sql = "SELECT * FROM table WHERE username = '".$_SESSION['login']."'";
+$req = mysql_query($sql or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
+while ($data = mysql_fetch_array($req)) 
+{
     $surname = $data['surname'];
     $name = $data['name'];
     $id = $data['id'];
-  }
+}
   
 echo '<font style="font-size: 30px;"><center><strong>'.$surname.' '.$name.'</strong> - Student Agenda</center></font><br><br>';
 echo '<b><u><i>Attention</b></u></i> : Ceci reflète l\'emploi du temps en ligne de votre numéro étudiant, nous ne garantissons pas l\'exactitude des informations fournies<br><br>';
