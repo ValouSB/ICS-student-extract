@@ -1,0 +1,108 @@
+<?php 
+$base = mysql_connect ('DATABASE-WEBSITE', 'USERNAME', 'PASSWORD');
+	mysql_select_db ('DATABASE', $base);
+$sql = "SELECT * FROM table_user WHERE username = '".$_SESSION['login']."'";
+$req = mysql_query($sql) or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
+while ($data = mysql_fetch_array($req)) 
+{
+    $dept = $data['dept'];
+    $semestre = $data['semestre'];
+    $mention = $data['mention'];
+}
+$sql = "SELECT * FROM coefs WHERE dept = '".$dept."' && semestre = '".$semestre."' && mention = '".$mention."'";
+$req = mysql_query($sql) or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
+$c = 0;
+while ($data32 = mysql_fetch_array($req)) 
+{
+  if ($data32['category'] != "yes") { $c = $c+1;}
+}
+?>
+<script language="JavaScript">
+function verif_input(champ) 
+{
+  if(champ.value < 0 || champ.value > 20)
+   {
+      surligne(champ, true);
+      return false;
+   }
+   else
+   {
+      surligne(champ, false);
+      return true;
+   }
+}
+function surligne(champ, erreur)
+{
+   if(erreur)
+      champ.style.border = "1px solid red";
+   else
+      champ.style.border = "";
+}
+function run_calc()
+{
+    var total=0;
+    var nbinput = <?php echo $c; ?>;
+    var n=1; var o=101; var totalcoef = 0; var totaltemp =0;
+    while(n < nbinput+1)
+    {
+        if(parseInt(document.getElementById(n).value) <= 20 && parseInt(document.getElementById(n).value) >= 0 )
+        {
+            var totaltemp = (parseFloat(document.getElementById(n).value) * parseFloat(document.getElementById(o).value)) + totaltemp;
+            totalcoef = parseFloat(document.getElementById(o).value) + totalcoef;
+        }
+        n = n+1; o = o+1;
+    }
+    total = totaltemp / totalcoef;
+    total2dec = parseFloat(total).toFixed(2);
+    document.getElementById('resultat').value=total2dec;
+}
+function numbersonly(myfield, e, dec)
+{
+var key;
+var keychar;
+
+if (window.event)
+   key = window.event.keyCode;
+else if (e)
+   key = e.which;
+else
+   return true;
+keychar = String.fromCharCode(key);
+if ((key==null) || (key==0) || (key==8) || 
+    (key==9) || (key==13) || (key==27) )
+   return true;
+else if ((("0123456789.,").indexOf(keychar) > -1))
+   return true;
+else if (dec && (keychar == "."))
+   {
+   myfield.form.elements[dec].focus();
+   return false;
+   }
+else
+   return false;
+}
+</script>
+
+<?php
+$sql = "SELECT * FROM coefs WHERE dept = '".$dept."' && semestre = '".$semestre."' && mention = '".$mention."'";
+$req = mysql_query($sql) or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
+$i = 1;
+echo '<table><tr><td style="width:400px;"><b>Enseignement</b></td><td><b>Coef.</b></td><td style="text-align:center;"><b>Note</b></td></tr>';
+while ($data = mysql_fetch_array($req)) 
+{
+  if ($data['category'] != "yes") 
+  {
+    $icoef = $i + 100;
+    echo '<tr>';
+    echo '<td style="width:400px;">'; echo utf8_encode($data['matiere']); echo '</td>';
+    echo '<td style="text-align:center;">'; echo $data['coef']; echo '<input type="hidden" id="'.$icoef.'" value="'.$data['coef'].'"> </td>'; 
+    echo '<td style="text-align:center;">'; echo '<input data-type="number" id="'.$i.'"'; ?> SIZE=5 MAXLENGTH=5 onKeyPress="return numbersonly(this, event);" Onchange="this.value=this.value.replace(',','.'); run_calc(); verif_input(this);" <?php echo 'style="text-align:center;"> </td>';
+    $i = $i + 1;
+    echo'</tr>';
+  }
+}
+?>
+    <tr>
+    <td colspan=2><div style="float:right;"><b>Votre moyenne : </b></div></td>
+    <td style="text-align:center;"><input type="text" id="resultat" name="resultat" data-type="number"  SIZE=5 MAXLENGTH=5  readonly="readonly" style="text-align:center;"></td>
+    </tr>
